@@ -1,6 +1,7 @@
 
 pipeline {
     agent any
+    
     environment {
         NETLIFY_SITE_ID = 'd8459211-fc31-4ff9-887b-6e8d9723c7ec'
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
