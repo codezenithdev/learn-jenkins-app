@@ -1,7 +1,7 @@
 
 pipeline {
     agent any
-    
+
     environment {
         NETLIFY_SITE_ID = 'd8459211-fc31-4ff9-887b-6e8d9723c7ec'
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
@@ -90,6 +90,28 @@ pipeline {
                    '''
                 }
             }
-        }
 
+        stage('PostDeployment') {
+            agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    reuseNode true
+                }
+            }
+            environment {
+                CI_ENVIRONMENT_URL = 'https://serene-monstera-7863a8.netlify.app'
+            }
+            steps {
+                sh '''
+                                npx playwright test --reporter=html
+                            '''
+            }
+            post {
+                always {
+                    junit 'jest-results/junit.xml'
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Paywright E2E Report', reportTitles: '', useWrapperFileDirectly: true])
+                }
+            }
+        }
+        }
 }
