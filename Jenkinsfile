@@ -1,11 +1,11 @@
 
 pipeline {
     agent any
-    environment{
-        NETLIFY_SITE_ID ='d8459211-fc31-4ff9-887b-6e8d9723c7ec'
+    environment {
+        NETLIFY_SITE_ID = 'd8459211-fc31-4ff9-887b-6e8d9723c7ec'
+        NETLIFY_AUTH_TOKEN = credentials('netlify-token')
     }
         stages {
-
             stage('Build') {
                 agent {
                     docker {
@@ -24,7 +24,7 @@ pipeline {
                    '''
                 }
             }
-            
+
             stage('Stage Test') {
                 parallel {
                     stage('Unit Test') {
@@ -46,7 +46,7 @@ pipeline {
                                     junit 'jest-results/junit.xml'
                                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
                                 }
-                            }
+                        }
                     }
 
                     stage('E2E Test') {
@@ -69,7 +69,7 @@ pipeline {
                                     junit 'jest-results/junit.xml'
                                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
                                 }
-                            }
+                        }
                     }
                 }
             }
@@ -85,10 +85,10 @@ pipeline {
                     npm install netlify-cli
                     node_modules/.bin/netlify --version
                     echo "Deploying to production site id is: $NETLIFY_SITE_ID"
+                    node_modules/.bin/netlify status
                    '''
                 }
             }
         }
-
 
 }
