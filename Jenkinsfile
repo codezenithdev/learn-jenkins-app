@@ -87,9 +87,14 @@ pipeline {
                     node_modules/.bin/netlify --version
                     echo "Deploying to production site id is: $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
-                    node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json
+                    node_modules/.bin/netlify deploy --dir=build --json 
+                    
                    '''
+                }
+            }
+            stage('Approval') {
+                steps {
+                    input message: 'Do you wish to deploy to production', ok: 'Yes, I\'m sure!'
                 }
             }
             stage('Deploy production') {
@@ -109,11 +114,6 @@ pipeline {
                    '''
                 }
             }
-        stage('Approval'){
-            steps{
-                input message: 'Do you wish to deploy to production', ok: 'Yes, I\'m sure!'
-            }
-        }
 
         stage('PostDeployment') {
             agent {
